@@ -1,75 +1,54 @@
-# React + TypeScript + Vite
+# HomeVision houses explorer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Take-home UI: infinite-scrolling house listings from the HomeVision staging API, with resilient error handling, client-side search/sort, favorites (local storage), and a responsive detail view.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 + TypeScript + Vite
+- Tailwind CSS v4 + [shadcn/ui](https://ui.shadcn.com/)
+- [TanStack Query](https://tanstack.com/query) (`useInfiniteQuery` for pagination)
+- Feature-based folders under `src/features`, shared UI under `src/shared`
 
-## React Compiler
+## Prerequisites
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- [Node.js](https://nodejs.org/) 20+
+- [pnpm](https://pnpm.io/) 9+
 
-Note: This will impact Vite dev & build performances.
+## Run locally
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
+pnpm dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open the URL Vite prints (usually `http://localhost:5173`).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Build & preview (production bundle)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm build
+pnpm preview
 ```
+
+`pnpm build` runs TypeScript checking then Vite’s production build.
+
+## Environment
+
+Copy `.env.example` to `.env` if you need to override the API base in **production** builds:
+
+- `VITE_API_BASE_URL` — full base including `/api_project`, no trailing slash (e.g. `https://staging.homevision.co/api_project`).
+
+**Development:** requests go to `/api/...` and Vite proxies to `https://staging.homevision.co/api_project/...` (see `vite.config.ts`) so the browser avoids cross-origin issues.
+
+## API behavior
+
+The staging endpoint is intentionally flaky. The app uses TanStack Query retries with exponential backoff and in-UI **Refetch** / **Try again** actions when errors occur.
+
+## Scripts
+
+| Command        | Description                |
+| -------------- | -------------------------- |
+| `pnpm dev`     | Start dev server + HMR     |
+| `pnpm build`   | Typecheck + production build |
+| `pnpm preview` | Serve the `dist` folder    |
+| `pnpm lint`    | ESLint                     |
