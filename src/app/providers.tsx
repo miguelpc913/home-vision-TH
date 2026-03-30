@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 
 import { ThemeProvider } from "@/shared/context/themeContext";
+import { FavoritesProvider } from "@/features/houses/context/favoritesContext";
 
 /**
  * Default query behavior tuned for HomeVision's flaky staging API:
@@ -24,7 +25,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>{children}</ThemeProvider>
+      <ThemeProvider>
+        <FavoritesProvider>{children}</FavoritesProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

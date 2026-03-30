@@ -1,4 +1,5 @@
-import { parseHousesApiResponse, type House } from '@/features/houses/api/types'
+import { parseHousesApiResponse } from '@/features/houses/api/parseHousesApiResponse'
+import type { House } from '@/features/houses/api/types'
 
 const STAGING_BASE = 'https://staging.homevision.co/api_project'
 

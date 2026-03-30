@@ -1,13 +1,18 @@
-import { AppProviders } from '@/app/providers'
-import { HousesPage } from '@/features/houses/components/HousesPage'
-import { AppShell } from '@/shared/components/AppShell'
+import { AppProviders } from "@/app/providers";
+import { HousesPage } from "@/features/houses/pages/HousesPage";
+import { Footer } from "./shared/components/Footer";
+import { Header } from "./shared/components/Header";
 
 export default function App() {
   return (
     <AppProviders>
-      <AppShell>
-        <HousesPage />
-      </AppShell>
+      <div className="flex min-h-svh flex-col bg-background">
+        <Header />
+        <main className="flex-1">
+          <HousesPage />
+        </main>
+        <Footer />
+      </div>
     </AppProviders>
-  )
+  );
 }

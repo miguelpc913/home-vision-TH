@@ -1,16 +1,8 @@
-import { Heart, Home, ImageOff } from "lucide-react";
-import { useState } from "react";
-
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Heart, Home } from "lucide-react";
+import { Button } from "@ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@ui/card";
 import type { House } from "@/features/houses/api/types";
+import { ImageWithFallback } from "@/shared/components/ui/ImageWithFallback";
 
 const priceFmt = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -18,16 +10,14 @@ const priceFmt = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0,
 });
 
-type HouseCardProps = {
+type Props = {
   house: House;
   isFavorite: boolean;
   onToggleFavorite: (id: number) => void;
   onOpenDetail: (house: House) => void;
 };
 
-export function HouseCard({ house, isFavorite, onToggleFavorite, onOpenDetail }: HouseCardProps) {
-  const [imgFailed, setImgFailed] = useState(false);
-
+export function HouseCard({ house, isFavorite, onToggleFavorite, onOpenDetail }: Props) {
   const openDetail = () => onOpenDetail(house);
 
   return (
@@ -45,24 +35,17 @@ export function HouseCard({ house, isFavorite, onToggleFavorite, onOpenDetail }:
       }}
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
-        {!imgFailed ? (
-          <img
-            src={house.photoURL}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            className="size-full object-cover motion-reduce:transition-none"
-            onError={() => setImgFailed(true)}
-          />
-        ) : (
-          <div
-            className="flex size-full flex-col items-center justify-center gap-2 text-muted-foreground"
-            aria-hidden
-          >
-            <ImageOff className="size-10" />
-            <span className="text-xs">Photo unavailable</span>
-          </div>
-        )}
+        <ImageWithFallback
+          src={house.photoURL}
+          alt=""
+          imgClassName="size-full object-cover motion-reduce:transition-none"
+          decoding="async"
+          fallbackClassName="flex size-full flex-col items-center justify-center gap-2 text-muted-foreground"
+          iconClassName="size-10"
+          fallbackText="Photo unavailable"
+          fallbackTextClassName="text-xs"
+          fallbackAriaHidden
+        />
         <Button
           type="button"
           variant="secondary"

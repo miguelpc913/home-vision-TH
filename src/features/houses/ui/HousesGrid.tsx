@@ -1,7 +1,7 @@
 import type { House } from '@/features/houses/api/types'
-import { HouseCard } from '@/features/houses/components/HouseCard'
+import { HouseCard } from '@/features/houses/ui/HouseCard'
 
-type HousesGridProps = {
+type Props = {
   houses: House[]
   isFavorite: (id: number) => boolean
   onToggleFavorite: (id: number) => void
@@ -13,7 +13,7 @@ export function HousesGrid({
   isFavorite,
   onToggleFavorite,
   onOpenDetail,
-}: HousesGridProps) {
+}: Props) {
   return (
     <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {houses.map((house) => (

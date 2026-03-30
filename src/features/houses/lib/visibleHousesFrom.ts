@@ -1,5 +1,4 @@
-import type { House } from '@/features/houses/api/types'
-import type { FilterMode } from '@/features/houses/components/HousesToolbar'
+import type { FilterMode, House } from '@/features/houses/api/types'
 
 /** Filter-only; order matches API / infinite-query page order. */
 export function visibleHousesFrom(

@@ -1,13 +1,19 @@
 import { useFavorites } from "@/features/houses/context/favoritesContext";
 import { useHousesInfiniteQuery } from "@/features/houses/hooks/useHousesInfiniteQuery";
-import { HousesFeedListFooter } from "./HousesFeedListFooter";
-import { HousesFeedSkeleton } from "./HousesFeedSkeleton";
+import { visibleHousesFrom } from "@/features/houses/lib/visibleHousesFrom";
+import { ErrorActionAlert } from "./ErrorActionAlert";
+import { HousesFeedFooter } from "./HousesFeedFooter";
+import { HousesFeedSkeleton } from "./HousesGridSkeleton";
 import { HousesGrid } from "./HousesGrid";
-import { HousesQueryErrorAlert } from "./HousesQueryErrorAlert";
-import type { HousesFeedProps } from "./types";
-import { visibleHousesFrom } from "./visibleHousesFrom";
+import type { FilterMode, House } from "@/features/houses/api/types";
 
-export function HousesFeedInner({ search, filterMode, onOpenDetail }: HousesFeedProps) {
+type Props = {
+  search: string;
+  filterMode: FilterMode;
+  onOpenDetail: (house: House) => void;
+};
+
+export function HousesFeed({ search, filterMode, onOpenDetail }: Props) {
   const { isFavorite, toggleFavorite, favoriteIds } = useFavorites();
 
   const { data, error, isError, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -34,17 +40,15 @@ export function HousesFeedInner({ search, filterMode, onOpenDetail }: HousesFeed
           No houses match your search or filter. Try adjusting the toolbar above.
         </p>
       ) : (
-        <>
-          <HousesGrid
-            houses={visibleHouses}
-            isFavorite={isFavorite}
-            onToggleFavorite={toggleFavorite}
-            onOpenDetail={onOpenDetail}
-          />
-        </>
+        <HousesGrid
+          houses={visibleHouses}
+          isFavorite={isFavorite}
+          onToggleFavorite={toggleFavorite}
+          onOpenDetail={onOpenDetail}
+        />
       )}
       {!isError && !error && hasLoadedSome ? (
-        <HousesFeedListFooter
+        <HousesFeedFooter
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
           isFetchingNextPage={isFetchingNextPage}
@@ -52,10 +56,13 @@ export function HousesFeedInner({ search, filterMode, onOpenDetail }: HousesFeed
         />
       ) : null}
       {isError && error ? (
-        <HousesQueryErrorAlert
+        <ErrorActionAlert
           title={hasLoadedSome ? "Could not load more listings" : "Could not load houses"}
           message={error.message}
-          onRefetch={fetchNextPage}
+          actionLabel="Refetch"
+          actionLoadingLabel="Refetching..."
+          onAction={fetchNextPage}
+          className="mx-auto"
         />
       ) : null}
     </div>
