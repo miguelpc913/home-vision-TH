@@ -1,6 +1,6 @@
 # HomeVision houses explorer
 
-Take-home UI: infinite-scrolling house listings from the HomeVision staging API, with resilient error handling, client-side search/sort, favorites (local storage), and a responsive detail view.
+Take-home UI: infinite-scrolling house listings from the HomeVision staging API, with resilient error handling, client-side search and filters, favorites (local storage), and a responsive detail view.
 
 ## Stack
 

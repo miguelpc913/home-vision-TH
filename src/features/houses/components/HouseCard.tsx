@@ -1,7 +1,7 @@
-import { Heart, Home, ImageOff } from 'lucide-react'
-import { useState } from 'react'
+import { Heart, Home, ImageOff } from "lucide-react";
+import { useState } from "react";
 
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,31 +9,26 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import type { House } from '@/features/houses/api/types'
+} from "@/components/ui/card";
+import type { House } from "@/features/houses/api/types";
 
-const priceFmt = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
+const priceFmt = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
   maximumFractionDigits: 0,
-})
+});
 
 type HouseCardProps = {
-  house: House
-  isFavorite: boolean
-  onToggleFavorite: (id: number) => void
-  onOpenDetail: (house: House) => void
-}
+  house: House;
+  isFavorite: boolean;
+  onToggleFavorite: (id: number) => void;
+  onOpenDetail: (house: House) => void;
+};
 
-export function HouseCard({
-  house,
-  isFavorite,
-  onToggleFavorite,
-  onOpenDetail,
-}: HouseCardProps) {
-  const [imgFailed, setImgFailed] = useState(false)
+export function HouseCard({ house, isFavorite, onToggleFavorite, onOpenDetail }: HouseCardProps) {
+  const [imgFailed, setImgFailed] = useState(false);
 
-  const openDetail = () => onOpenDetail(house)
+  const openDetail = () => onOpenDetail(house);
 
   return (
     <Card
@@ -42,10 +37,10 @@ export function HouseCard({
       tabIndex={0}
       aria-label={`View details for ${house.address}`}
       onClick={openDetail}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          openDetail()
+      onKeyDown={e => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openDetail();
         }
       }}
     >
@@ -74,17 +69,13 @@ export function HouseCard({
           size="icon-sm"
           className="absolute top-2 right-2 rounded-full shadow-sm"
           aria-pressed={isFavorite}
-          aria-label={
-            isFavorite ? 'Remove from favorites' : 'Add to favorites'
-          }
-          onClick={(e) => {
-            e.stopPropagation()
-            onToggleFavorite(house.id)
+          aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+          onClick={e => {
+            e.stopPropagation();
+            onToggleFavorite(house.id);
           }}
         >
-          <Heart
-            className={isFavorite ? 'fill-destructive text-destructive' : ''}
-          />
+          <Heart className={isFavorite ? "fill-destructive text-destructive" : ""} />
         </Button>
       </div>
       <CardHeader className="pb-2">
@@ -99,9 +90,7 @@ export function HouseCard({
           {priceFmt.format(house.price)}
         </p>
       </CardContent>
-      <CardFooter className="text-xs text-muted-foreground">
-        Tap for full details
-      </CardFooter>
+      <CardFooter className="text-xs text-muted-foreground">Click for full details</CardFooter>
     </Card>
-  )
+  );
 }

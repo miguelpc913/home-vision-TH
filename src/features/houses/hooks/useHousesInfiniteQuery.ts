@@ -1,7 +1,8 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
+
 import { fetchHousesPage } from "@/features/houses/api/fetchHousesPage";
 
-export const HOUSES_PER_PAGE = 10;
+export const HOUSES_PER_PAGE = 21;
 
 export function useHousesInfiniteQuery() {
   const perPage = HOUSES_PER_PAGE;
