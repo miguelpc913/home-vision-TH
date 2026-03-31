@@ -3,10 +3,10 @@ import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 import type { FilterMode, House } from "@/features/houses/api/types";
 import { useFavorites } from "@/features/houses/context/favoritesContext";
-import { HouseDetail } from "@/features/houses/ui/HouseDetail";
-import { HousesToolbar } from "@/features/houses/ui/HousesToolbar";
-import { HousesFeed } from "@/features/houses/ui/HousesFeed";
-import { ErrorActionAlert } from "@/features/houses/ui/ErrorActionAlert";
+import { HouseDetail } from "@/features/houses/components/HouseDetail/HouseDetail";
+import { HousesToolbar } from "@/features/houses/components/HousesToolbar";
+import { HousesFeed } from "@/features/houses/components/HouseFeed/HousesFeed";
+import { ErrorActionAlert } from "@/features/houses/components/ErrorActionAlert/ErrorActionAlert";
 
 export function HousesPage() {
   const [search, setSearch] = useState("");

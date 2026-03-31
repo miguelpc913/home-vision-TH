@@ -4,12 +4,12 @@ import { useHousesInfiniteQuery } from "@/features/houses/hooks/useHousesInfinit
 import { useHousesListingUrlState } from "@/features/houses/hooks/useHousesListingUrlState";
 import { visibleHousesFrom } from "@/features/houses/lib/visibleHousesFrom";
 import type { FilterMode, House } from "@/features/houses/api/types";
-import { ErrorActionAlert } from "./ErrorActionAlert";
+import { ErrorActionAlert } from "../ErrorActionAlert/ErrorActionAlert";
 import { HousesFeedFooter } from "./HousesFeedFooter";
 import { HousesFeedPreviousControls } from "./HousesFeedPreviousControls";
 import { HousesFeedScrollToTop } from "./HousesFeedScrollToTop";
-import { HousesFeedSkeleton } from "./HousesGridSkeleton";
-import { HousesGrid } from "./HousesGrid";
+import { HousesFeedSkeleton } from "../HouseGrid/HousesGridSkeleton";
+import { HousesGrid } from "../HouseGrid/HousesGrid";
 
 type Props = {
   search: string;
@@ -60,10 +60,10 @@ export function HousesFeed({ search, filterMode, onOpenDetail }: Props) {
 
   useLayoutEffect(() => {
     if (isPending || isFetchingPreviousPage) return;
-    const pending = pendingScrollAfterPrependRef.current;
-    if (!pending) return;
-    const delta = document.documentElement.scrollHeight - pending.scrollHeight;
-    window.scrollTo({ top: pending.scrollY + delta, left: 0, behavior: "auto" });
+    const pendingScroll = pendingScrollAfterPrependRef.current;
+    if (!pendingScroll) return;
+    const delta = document.documentElement.scrollHeight - pendingScroll.scrollHeight;
+    window.scrollTo({ top: pendingScroll.scrollY + delta, left: 0, behavior: "auto" });
     pendingScrollAfterPrependRef.current = null;
   }, [isPending, isFetchingPreviousPage, data]);
 
