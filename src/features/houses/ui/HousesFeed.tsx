@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { useFavorites } from "@/features/houses/context/favoritesContext";
 import { useHousesInfiniteQuery } from "@/features/houses/hooks/useHousesInfiniteQuery";
 import { useHousesListingUrlState } from "@/features/houses/hooks/useHousesListingUrlState";
@@ -18,6 +18,11 @@ type Props = {
 };
 
 export function HousesFeed({ search, filterMode, onOpenDetail }: Props) {
+  const pendingScrollAfterPrependRef = useRef<{
+    scrollHeight: number;
+    scrollY: number;
+  } | null>(null);
+
   const { currentPage, setCurrentPage: onCurrentPageChange } = useHousesListingUrlState();
   const { isFavorite, toggleFavorite, favoriteIds } = useFavorites();
   const {
@@ -45,6 +50,23 @@ export function HousesFeed({ search, filterMode, onOpenDetail }: Props) {
     }
   }, [currentPage, loadedMax, onCurrentPageChange]);
 
+  async function handleFetchPreviousPage() {
+    pendingScrollAfterPrependRef.current = {
+      scrollHeight: document.documentElement.scrollHeight,
+      scrollY: window.scrollY,
+    };
+    await fetchPreviousPage();
+  }
+
+  useLayoutEffect(() => {
+    if (isPending || isFetchingPreviousPage) return;
+    const pending = pendingScrollAfterPrependRef.current;
+    if (!pending) return;
+    const delta = document.documentElement.scrollHeight - pending.scrollHeight;
+    window.scrollTo({ top: pending.scrollY + delta, left: 0, behavior: "auto" });
+    pendingScrollAfterPrependRef.current = null;
+  }, [isPending, isFetchingPreviousPage, data]);
+
   if (isPending) {
     return <HousesFeedSkeleton />;
   }
@@ -66,7 +88,7 @@ export function HousesFeed({ search, filterMode, onOpenDetail }: Props) {
     <div className="relative space-y-6">
       {showPreviousControls ? (
         <HousesFeedPreviousControls
-          fetchPreviousPage={fetchPreviousPage}
+          fetchPreviousPage={handleFetchPreviousPage}
           hasPreviousPage={hasPreviousPage}
           isFetchingPreviousPage={isFetchingPreviousPage}
         />
@@ -78,7 +100,7 @@ export function HousesFeed({ search, filterMode, onOpenDetail }: Props) {
           message={error.message}
           actionLabel="Try again"
           actionLoadingLabel="Retrying..."
-          onAction={fetchPreviousPage}
+          onAction={handleFetchPreviousPage}
           className="mx-auto"
         />
       ) : null}
