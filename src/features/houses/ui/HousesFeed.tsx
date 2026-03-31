@@ -1,11 +1,15 @@
+import { useEffect } from "react";
 import { useFavorites } from "@/features/houses/context/favoritesContext";
 import { useHousesInfiniteQuery } from "@/features/houses/hooks/useHousesInfiniteQuery";
+import { useHousesListingUrlState } from "@/features/houses/hooks/useHousesListingUrlState";
 import { visibleHousesFrom } from "@/features/houses/lib/visibleHousesFrom";
+import type { FilterMode, House } from "@/features/houses/api/types";
 import { ErrorActionAlert } from "./ErrorActionAlert";
 import { HousesFeedFooter } from "./HousesFeedFooter";
+import { HousesFeedPreviousControls } from "./HousesFeedPreviousControls";
+import { HousesFeedScrollToTop } from "./HousesFeedScrollToTop";
 import { HousesFeedSkeleton } from "./HousesGridSkeleton";
 import { HousesGrid } from "./HousesGrid";
-import type { FilterMode, House } from "@/features/houses/api/types";
 
 type Props = {
   search: string;
@@ -14,27 +18,71 @@ type Props = {
 };
 
 export function HousesFeed({ search, filterMode, onOpenDetail }: Props) {
+  const { currentPage, setCurrentPage: onCurrentPageChange } = useHousesListingUrlState();
   const { isFavorite, toggleFavorite, favoriteIds } = useFavorites();
+  const {
+    data,
+    error,
+    isError,
+    isPending,
+    fetchNextPage,
+    fetchPreviousPage,
+    hasNextPage,
+    hasPreviousPage,
+    isFetchingNextPage,
+    isFetchingPreviousPage,
+    isFetchPreviousPageError,
+    isFetchNextPageError,
+  } = useHousesInfiniteQuery({ startPage: currentPage });
 
-  const { data, error, isError, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useHousesInfiniteQuery();
+  const loadedParams = (data?.pageParams ?? []) as number[];
+  const loadedMax = loadedParams.length ? Math.max(...loadedParams) : currentPage;
 
-  const allHouses = data?.pages.flatMap(p => p) ?? [];
-  const visibleHouses = visibleHousesFrom(allHouses, filterMode, favoriteIds, search);
+  // Persist only current page in URL; previous window remains in-memory.
+  useEffect(() => {
+    if (loadedMax !== currentPage) {
+      onCurrentPageChange(loadedMax);
+    }
+  }, [currentPage, loadedMax, onCurrentPageChange]);
 
   if (isPending) {
     return <HousesFeedSkeleton />;
   }
 
+  const allHouses = data?.pages.flatMap(p => p) ?? [];
+  const visibleHouses = visibleHousesFrom(allHouses, filterMode, favoriteIds, search);
   const hasLoadedSome = allHouses.length > 0;
-
   const emptyAfterFilter =
     allHouses.length > 0 &&
     visibleHouses.length === 0 &&
     (filterMode === "favorites" || search.trim().length > 0);
 
+  const showInfiniteFooter = hasLoadedSome && !isError && !isFetchNextPageError && !error;
+
+  const showPreviousControls =
+    hasLoadedSome && !isFetchPreviousPageError && !error && hasPreviousPage;
+
   return (
-    <div className="space-y-6">
+    <div className="relative space-y-6">
+      {showPreviousControls ? (
+        <HousesFeedPreviousControls
+          fetchPreviousPage={fetchPreviousPage}
+          hasPreviousPage={hasPreviousPage}
+          isFetchingPreviousPage={isFetchingPreviousPage}
+        />
+      ) : null}
+
+      {isFetchPreviousPageError && error ? (
+        <ErrorActionAlert
+          title="Could not load earlier listings"
+          message={error.message}
+          actionLabel="Try again"
+          actionLoadingLabel="Retrying..."
+          onAction={fetchPreviousPage}
+          className="mx-auto"
+        />
+      ) : null}
+
       {emptyAfterFilter ? (
         <p className="rounded-lg border border-dashed bg-muted/30 px-4 py-8 text-center text-sm text-muted-foreground">
           No houses match your search or filter. Try adjusting the toolbar above.
@@ -47,7 +95,7 @@ export function HousesFeed({ search, filterMode, onOpenDetail }: Props) {
           onOpenDetail={onOpenDetail}
         />
       )}
-      {!isError && !error && hasLoadedSome ? (
+      {showInfiniteFooter ? (
         <HousesFeedFooter
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
@@ -55,7 +103,7 @@ export function HousesFeed({ search, filterMode, onOpenDetail }: Props) {
           hasLoadedListings={allHouses.length > 0}
         />
       ) : null}
-      {isError && error ? (
+      {isError && error && !isFetchPreviousPageError ? (
         <ErrorActionAlert
           title={hasLoadedSome ? "Could not load more listings" : "Could not load houses"}
           message={error.message}
@@ -64,6 +112,10 @@ export function HousesFeed({ search, filterMode, onOpenDetail }: Props) {
           onAction={fetchNextPage}
           className="mx-auto"
         />
+      ) : null}
+
+      {hasLoadedSome ? (
+        <HousesFeedScrollToTop onReturnToFirstPage={() => onCurrentPageChange(1)} />
       ) : null}
     </div>
   );

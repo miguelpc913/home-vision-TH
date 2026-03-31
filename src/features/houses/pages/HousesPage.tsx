@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
-import type { House, FilterMode } from "@/features/houses/api/types";
+import type { FilterMode, House } from "@/features/houses/api/types";
 import { useFavorites } from "@/features/houses/context/favoritesContext";
 import { HouseDetail } from "@/features/houses/ui/HouseDetail";
 import { HousesToolbar } from "@/features/houses/ui/HousesToolbar";
