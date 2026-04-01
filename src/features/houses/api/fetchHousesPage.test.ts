@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { isHousesListRequest, mockHouse } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
@@ -21,9 +21,13 @@ describe("fetchHousesPage", () => {
   });
 
   it("throws on non-OK HTTP", async () => {
-    server.use(
-      http.get(isHousesListRequest, () => new HttpResponse(null, { status: 502 })),
-    );
+    server.use(http.get(isHousesListRequest, () => new HttpResponse(null, { status: 502 })));
     await expect(fetchHousesPage(1, 10)).rejects.toThrow();
+  });
+
+  it("throws a readable error on fetch/network failure", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockRejectedValueOnce(new Error("offline"));
+    await expect(fetchHousesPage(1, 10)).rejects.toThrow("Could not fetch houses: offline");
+    fetchSpy.mockRestore();
   });
 });

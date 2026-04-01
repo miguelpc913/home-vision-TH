@@ -41,6 +41,7 @@ export default defineConfig(({ mode }) => {
       setupFiles: ["./src/test/setup.ts"],
       css: true,
       pool: "forks",
+      exclude: ["e2e/**", "node_modules/**", "dist/**"],
     },
   };
 });

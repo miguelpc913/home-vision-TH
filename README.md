@@ -2,6 +2,10 @@
 
 Take-home UI: infinite-scrolling house listings from the HomeVision staging API, with resilient error handling, client-side search and filters, favorites (local storage), and a responsive detail view.
 
+## Live demo
+
+[https://home-vision-th.onrender.com/](https://home-vision-th.onrender.com/)
+
 ## Stack
 
 - React 19 + TypeScript + Vite
@@ -42,7 +46,11 @@ Copy `.env.example` to `.env` if you need to override the API base in **producti
 
 ## API behavior
 
-The staging endpoint is intentionally flaky. The app uses TanStack Query retries with exponential backoff and in-UI **Refetch** / **Try again** actions when errors occur.
+The staging endpoint is intentionally flaky. The app handles this in three layers:
+
+- **Automatic retries:** TanStack Query retries failed requests with exponential backoff.
+- **Graceful UI fallbacks:** feed-level error states render actionable alerts instead of breaking the page.
+- **User recovery actions:** users can trigger **Refetch** / **Try again** directly from the UI when transient failures occur.
 
 ## Scripts
 

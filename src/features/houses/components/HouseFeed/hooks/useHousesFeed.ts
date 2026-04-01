@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useFavorites } from "@/features/houses/context/favoritesContext";
 import { useHousesInfiniteQuery } from "./useHousesInfiniteQuery";
 import { useHousesListingUrlState } from "./useHousesListingUrlState";
@@ -36,8 +36,10 @@ export function useHousesFeed({ search, filterMode }: Params) {
     data,
   });
 
-  const loadedParams = (data?.pageParams ?? []) as number[];
-  const loadedMax = loadedParams.length ? Math.max(...loadedParams) : currentPage;
+  const loadedMax = useMemo(() => {
+    const loadedParams = (data?.pageParams ?? []) as number[];
+    return loadedParams.length ? Math.max(...loadedParams) : currentPage;
+  }, [currentPage, data?.pageParams]);
 
   useEffect(() => {
     if (loadedMax !== currentPage) {
@@ -45,8 +47,11 @@ export function useHousesFeed({ search, filterMode }: Params) {
     }
   }, [currentPage, loadedMax, onCurrentPageChange]);
 
-  const allHouses = data?.pages.flatMap(p => p) ?? [];
-  const visibleHouses = visibleHousesFrom(allHouses, filterMode, favoriteIds, search);
+  const allHouses = useMemo(() => data?.pages.flatMap(p => p) ?? [], [data?.pages]);
+  const visibleHouses = useMemo(
+    () => visibleHousesFrom(allHouses, filterMode, favoriteIds, search),
+    [allHouses, favoriteIds, filterMode, search],
+  );
   const hasLoadedSome = allHouses.length > 0;
   const emptyAfterFilter =
     allHouses.length > 0 &&

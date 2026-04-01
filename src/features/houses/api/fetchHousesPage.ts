@@ -21,7 +21,13 @@ export async function fetchHousesPage(
 ): Promise<House[]> {
   const base = apiBaseUrl()
   const url = `${base}/houses?page=${page}&per_page=${perPage}`
-  const res = await fetch(url)
+  let res: Response
+  try {
+    res = await fetch(url)
+  } catch (e) {
+    const msg = e instanceof Error && e.message ? e.message : 'Network error'
+    throw new Error(`Could not fetch houses: ${msg}`)
+  }
 
   let json: unknown
   try {
