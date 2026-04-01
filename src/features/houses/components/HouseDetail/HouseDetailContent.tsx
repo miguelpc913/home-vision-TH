@@ -18,24 +18,29 @@ type Props = {
 export function HouseDetailContent({ house, isFavorite, onToggleFavorite }: Props) {
   return (
     <>
-      <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted sm:aspect-16/10">
+      <div className="relative aspect-video w-full overflow-hidden rounded-xl border bg-muted/40 shadow-sm sm:aspect-16/10">
         <ImageWithFallback
           src={house.photoURL}
           alt=""
           imgClassName="size-full object-cover"
-          fallbackClassName="flex size-full flex-col items-center justify-center gap-2 text-muted-foreground"
+          fallbackClassName="flex size-full flex-col items-center justify-center gap-2 bg-muted/60 text-muted-foreground"
           iconClassName="size-12"
           fallbackText="Photo unavailable"
           fallbackTextClassName="text-sm"
         />
       </div>
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <p className="text-2xl font-semibold tracking-tight">{priceFmt.format(house.price)}</p>
+      <div className="rounded-xl border bg-card/70 p-4 shadow-sm">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="space-y-0.5">
+              <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">Listing price</p>
+              <p className="text-3xl font-semibold tracking-tight">{priceFmt.format(house.price)}</p>
+            </div>
           <Button
             type="button"
             variant={isFavorite ? "secondary" : "outline"}
             size="sm"
+            className="min-w-24 gap-2"
             aria-pressed={isFavorite}
             onClick={() => onToggleFavorite(house.id)}
           >
@@ -43,11 +48,15 @@ export function HouseDetailContent({ house, isFavorite, onToggleFavorite }: Prop
             {isFavorite ? "Saved" : "Save"}
           </Button>
         </div>
-        <div className="flex items-start gap-2 text-sm text-muted-foreground">
-          <Home className="mt-0.5 size-4 shrink-0" aria-hidden />
-          <span>{house.homeowner}</span>
+          <div className="h-px w-full bg-border" />
+          <div className="space-y-3">
+            <div className="flex items-start gap-2 text-sm text-muted-foreground">
+              <Home className="mt-0.5 size-4 shrink-0" aria-hidden />
+              <span className="font-medium">{house.homeowner}</span>
+            </div>
+            <p className="text-sm leading-relaxed text-foreground/90">{house.address}</p>
+          </div>
         </div>
-        <p className="text-sm leading-relaxed">{house.address}</p>
       </div>
     </>
   );
