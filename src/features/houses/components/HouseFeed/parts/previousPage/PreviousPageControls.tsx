@@ -7,7 +7,7 @@ type Props = {
   isFetchingPreviousPage: boolean;
 };
 
-export function HousesFeedPreviousControls({
+export function PreviousPageControls({
   fetchPreviousPage,
   hasPreviousPage,
   isFetchingPreviousPage,

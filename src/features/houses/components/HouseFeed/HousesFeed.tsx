@@ -1,9 +1,9 @@
 import type { FilterMode, House } from "@/features/houses/api/types";
 import { useHousesFeed } from "./hooks/useHousesFeed";
 import { ErrorActionAlert } from "../ErrorActionAlert/ErrorActionAlert";
-import { HousesFeedFooter } from "./ui/Footer/HousesFeedFooter";
-import { HousesFeedPreviousControls } from "./ui/PreviousPageControls/HousesFeedPreviousControls";
-import { HousesFeedScrollToTop } from "./ui/ScrollToTop/HousesFeedScrollToTop";
+import { Footer } from "./parts/footer/Footer";
+import { PreviousPageControls } from "./parts/previousPage/PreviousPageControls";
+import { ScrollToTopButton } from "./parts/scrollToTop/ScrollToTopButton";
 import { HousesFeedSkeleton } from "../HouseGrid/HousesGridSkeleton";
 import { HousesGrid } from "../HouseGrid/HousesGrid";
 
@@ -43,7 +43,7 @@ export function HousesFeed({ search, filterMode, onOpenDetail }: Props) {
   return (
     <div className="relative space-y-6">
       {showPreviousControls ? (
-        <HousesFeedPreviousControls
+        <PreviousPageControls
           fetchPreviousPage={handleFetchPreviousPage}
           hasPreviousPage={hasPreviousPage}
           isFetchingPreviousPage={isFetchingPreviousPage}
@@ -74,7 +74,7 @@ export function HousesFeed({ search, filterMode, onOpenDetail }: Props) {
         />
       )}
       {showInfiniteFooter ? (
-        <HousesFeedFooter
+        <Footer
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
           isFetchingNextPage={isFetchingNextPage}
@@ -92,7 +92,7 @@ export function HousesFeed({ search, filterMode, onOpenDetail }: Props) {
         />
       ) : null}
 
-      {hasLoadedSome ? <HousesFeedScrollToTop onReturnToFirstPage={onReturnToFirstPage} /> : null}
+      {hasLoadedSome ? <ScrollToTopButton onReturnToFirstPage={onReturnToFirstPage} /> : null}
     </div>
   );
 }

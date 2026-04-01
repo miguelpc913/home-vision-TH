@@ -9,7 +9,7 @@ type Props = {
   hasLoadedListings: boolean;
 };
 
-export function HousesFeedFooter({
+export function Footer({
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage,

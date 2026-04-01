@@ -8,7 +8,7 @@ type Props = {
   onReturnToFirstPage: () => void;
 };
 
-export function HousesFeedScrollToTop({ onReturnToFirstPage }: Props) {
+export function ScrollToTopButton({ onReturnToFirstPage }: Props) {
   const { scrolled } = useHousesFeedScrollToTop();
 
   return (
