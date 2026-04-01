@@ -3,7 +3,7 @@ import { useFavorites } from "@/features/houses/context/favoritesContext";
 import { useHousesInfiniteQuery } from "./useHousesInfiniteQuery";
 import { useHousesListingUrlState } from "./useHousesListingUrlState";
 import { useHousesFeedPreviousPage } from "./useHousesFeedPreviousPage";
-import { visibleHousesFrom } from "@/features/houses/lib/visibleHousesFrom";
+import { visibleHousesFrom } from "@/features/houses/components/HouseFeed/utils/visibleHousesFrom";
 import type { FilterMode } from "@/features/houses/api/types";
 
 type Params = {
