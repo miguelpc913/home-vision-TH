@@ -1,5 +1,5 @@
 import type { House } from "@/features/houses/api/types";
-import { HouseCard } from "@/features/houses/components/HouseCard";
+import { HouseCard } from "@/features/houses/components/HouseGrid/HouseCard";
 
 type Props = {
   houses: House[];

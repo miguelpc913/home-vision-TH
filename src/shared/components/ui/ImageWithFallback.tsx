@@ -1,5 +1,5 @@
 import { ImageOff } from "lucide-react";
-import { useState } from "react";
+import { useImageWithFallback } from "./useImageWithFallback";
 
 type Props = {
   src: string;
@@ -27,7 +27,7 @@ function ImageWithFallbackInner({
   decoding,
   fallbackAriaHidden,
 }: Props) {
-  const [loadFailed, setLoadFailed] = useState(false);
+  const { loadFailed, onImgError } = useImageWithFallback();
 
   if (loadFailed) {
     return (
@@ -45,7 +45,7 @@ function ImageWithFallbackInner({
       loading={loading}
       decoding={decoding}
       className={imgClassName}
-      onError={() => setLoadFailed(true)}
+      onError={onImgError}
     />
   );
 }

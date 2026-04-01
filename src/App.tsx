@@ -1,5 +1,5 @@
 import { AppProviders } from "@/app/providers";
-import { HousesPage } from "@/features/houses/pages/HousesPage";
+import { HousesPage } from "@/features/houses/HousesPage";
 import { Footer } from "./shared/components/Footer";
 import { Header } from "./shared/components/Header";
 

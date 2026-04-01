@@ -1,18 +1,22 @@
-import { useState } from "react";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
-import type { FilterMode, House } from "@/features/houses/api/types";
-import { useFavorites } from "@/features/houses/context/favoritesContext";
+import { useHousesPage } from "./useHousesPage";
 import { HouseDetail } from "@/features/houses/components/HouseDetail/HouseDetail";
-import { HousesToolbar } from "@/features/houses/components/HousesToolbar";
+import { HousesToolbar } from "@/features/houses/components/HousesToolbar/HousesToolbar";
 import { HousesFeed } from "@/features/houses/components/HouseFeed/HousesFeed";
 import { ErrorActionAlert } from "@/features/houses/components/ErrorActionAlert/ErrorActionAlert";
 
 export function HousesPage() {
-  const [search, setSearch] = useState("");
-  const [filterMode, setFilterMode] = useState<FilterMode>("all");
-  const [detailHouse, setDetailHouse] = useState<House | null>(null);
-  const { isFavorite, toggleFavorite } = useFavorites();
+  const {
+    search,
+    setSearch,
+    filterMode,
+    setFilterMode,
+    detailHouse,
+    openDetail,
+    onDetailOpenChange,
+    detailOpen,
+  } = useHousesPage();
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8 sm:px-6">
@@ -46,7 +50,7 @@ export function HousesPage() {
               />
             )}
           >
-            <HousesFeed search={search} filterMode={filterMode} onOpenDetail={setDetailHouse} />
+            <HousesFeed search={search} filterMode={filterMode} onOpenDetail={openDetail} />
           </ErrorBoundary>
         )}
       </QueryErrorResetBoundary>
@@ -54,12 +58,8 @@ export function HousesPage() {
       <HouseDetail
         key={detailHouse?.id ?? "closed"}
         house={detailHouse}
-        open={detailHouse !== null}
-        onOpenChange={o => {
-          if (!o) setDetailHouse(null);
-        }}
-        isFavorite={detailHouse ? isFavorite(detailHouse.id) : false}
-        onToggleFavorite={toggleFavorite}
+        open={detailOpen}
+        onOpenChange={onDetailOpenChange}
       />
     </div>
   );

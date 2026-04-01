@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
+import { useHousesFeedFooter } from "./useHousesFeedFooter";
 
 type Props = {
   fetchNextPage: () => Promise<unknown>;
@@ -15,23 +15,11 @@ export function HousesFeedFooter({
   isFetchingNextPage,
   hasLoadedListings,
 }: Props) {
-  const sentinelRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = sentinelRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      entries => {
-        const hit = entries[0]?.isIntersecting;
-        if (hit && hasNextPage && !isFetchingNextPage) {
-          void fetchNextPage();
-        }
-      },
-      { rootMargin: "500px" },
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  const { sentinelRef } = useHousesFeedFooter({
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  });
 
   return (
     <div ref={sentinelRef} className="flex min-h-12 items-center justify-center py-6" aria-hidden>

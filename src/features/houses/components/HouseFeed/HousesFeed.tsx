@@ -1,13 +1,9 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
-import { useFavorites } from "@/features/houses/context/favoritesContext";
-import { useHousesInfiniteQuery } from "@/features/houses/hooks/useHousesInfiniteQuery";
-import { useHousesListingUrlState } from "@/features/houses/hooks/useHousesListingUrlState";
-import { visibleHousesFrom } from "@/features/houses/lib/visibleHousesFrom";
 import type { FilterMode, House } from "@/features/houses/api/types";
+import { useHousesFeed } from "./hooks/useHousesFeed";
 import { ErrorActionAlert } from "../ErrorActionAlert/ErrorActionAlert";
-import { HousesFeedFooter } from "./HousesFeedFooter";
-import { HousesFeedPreviousControls } from "./HousesFeedPreviousControls";
-import { HousesFeedScrollToTop } from "./HousesFeedScrollToTop";
+import { HousesFeedFooter } from "./ui/Footer/HousesFeedFooter";
+import { HousesFeedPreviousControls } from "./ui/PreviousPageControls/HousesFeedPreviousControls";
+import { HousesFeedScrollToTop } from "./ui/ScrollToTop/HousesFeedScrollToTop";
 import { HousesFeedSkeleton } from "../HouseGrid/HousesGridSkeleton";
 import { HousesGrid } from "../HouseGrid/HousesGrid";
 
@@ -18,71 +14,31 @@ type Props = {
 };
 
 export function HousesFeed({ search, filterMode, onOpenDetail }: Props) {
-  const pendingScrollAfterPrependRef = useRef<{
-    scrollHeight: number;
-    scrollY: number;
-  } | null>(null);
-
-  const { currentPage, setCurrentPage: onCurrentPageChange } = useHousesListingUrlState();
-  const { isFavorite, toggleFavorite, favoriteIds } = useFavorites();
   const {
-    data,
-    error,
-    isError,
     isPending,
-    fetchNextPage,
-    fetchPreviousPage,
-    hasNextPage,
+    visibleHouses,
+    isFavorite,
+    toggleFavorite,
+    handleFetchPreviousPage,
     hasPreviousPage,
-    isFetchingNextPage,
     isFetchingPreviousPage,
     isFetchPreviousPageError,
-    isFetchNextPageError,
-  } = useHousesInfiniteQuery({ startPage: currentPage });
-
-  const loadedParams = (data?.pageParams ?? []) as number[];
-  const loadedMax = loadedParams.length ? Math.max(...loadedParams) : currentPage;
-
-  // Persist only current page in URL; previous window remains in-memory.
-  useEffect(() => {
-    if (loadedMax !== currentPage) {
-      onCurrentPageChange(loadedMax);
-    }
-  }, [currentPage, loadedMax, onCurrentPageChange]);
-
-  async function handleFetchPreviousPage() {
-    pendingScrollAfterPrependRef.current = {
-      scrollHeight: document.documentElement.scrollHeight,
-      scrollY: window.scrollY,
-    };
-    await fetchPreviousPage();
-  }
-
-  useLayoutEffect(() => {
-    if (isPending || isFetchingPreviousPage) return;
-    const pendingScroll = pendingScrollAfterPrependRef.current;
-    if (!pendingScroll) return;
-    const delta = document.documentElement.scrollHeight - pendingScroll.scrollHeight;
-    window.scrollTo({ top: pendingScroll.scrollY + delta, left: 0, behavior: "auto" });
-    pendingScrollAfterPrependRef.current = null;
-  }, [isPending, isFetchingPreviousPage, data]);
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    hasLoadedSome,
+    allHousesLength,
+    error,
+    isError,
+    emptyAfterFilter,
+    showInfiniteFooter,
+    showPreviousControls,
+    onReturnToFirstPage,
+  } = useHousesFeed({ search, filterMode });
 
   if (isPending) {
     return <HousesFeedSkeleton />;
   }
-
-  const allHouses = data?.pages.flatMap(p => p) ?? [];
-  const visibleHouses = visibleHousesFrom(allHouses, filterMode, favoriteIds, search);
-  const hasLoadedSome = allHouses.length > 0;
-  const emptyAfterFilter =
-    allHouses.length > 0 &&
-    visibleHouses.length === 0 &&
-    (filterMode === "favorites" || search.trim().length > 0);
-
-  const showInfiniteFooter = hasLoadedSome && !isError && !isFetchNextPageError && !error;
-
-  const showPreviousControls =
-    hasLoadedSome && !isFetchPreviousPageError && !error && hasPreviousPage;
 
   return (
     <div className="relative space-y-6">
@@ -122,7 +78,7 @@ export function HousesFeed({ search, filterMode, onOpenDetail }: Props) {
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
           isFetchingNextPage={isFetchingNextPage}
-          hasLoadedListings={allHouses.length > 0}
+          hasLoadedListings={allHousesLength > 0}
         />
       ) : null}
       {isError && error && !isFetchPreviousPageError ? (
@@ -136,9 +92,7 @@ export function HousesFeed({ search, filterMode, onOpenDetail }: Props) {
         />
       ) : null}
 
-      {hasLoadedSome ? (
-        <HousesFeedScrollToTop onReturnToFirstPage={() => onCurrentPageChange(1)} />
-      ) : null}
+      {hasLoadedSome ? <HousesFeedScrollToTop onReturnToFirstPage={onReturnToFirstPage} /> : null}
     </div>
   );
 }

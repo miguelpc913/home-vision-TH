@@ -1,23 +1,15 @@
 import { ArrowUp } from "lucide-react";
-import { useEffect, useState } from "react";
 import { Button } from "@ui/button";
+import { scrollToTopWithMotionPreference } from "./scrollToTopWithMotionPreference";
+import { useHousesFeedScrollToTop } from "./useHousesFeedScrollToTop";
 import { cn } from "@/lib/utils";
-
-const SCROLL_SHOW_PX = 400;
 
 type Props = {
   onReturnToFirstPage: () => void;
 };
 
 export function HousesFeedScrollToTop({ onReturnToFirstPage }: Props) {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > SCROLL_SHOW_PX);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const { scrolled } = useHousesFeedScrollToTop();
 
   return (
     <Button
@@ -34,8 +26,7 @@ export function HousesFeedScrollToTop({ onReturnToFirstPage }: Props) {
       aria-label="Return to top and first page"
       onClick={() => {
         onReturnToFirstPage();
-        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+        scrollToTopWithMotionPreference();
       }}
     >
       <ArrowUp className="size-5" />

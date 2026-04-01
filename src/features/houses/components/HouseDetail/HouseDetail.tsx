@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@ui/sheet";
 import type { House } from "@/features/houses/api/types";
+import { useFavorites } from "@/features/houses/context/favoritesContext";
 import { useIsMobile } from "@/shared/hooks/useIsMobile";
 import { HouseDetailContent } from "./HouseDetailContent";
 
@@ -8,14 +9,15 @@ type Props = {
   house: House | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  isFavorite: boolean;
-  onToggleFavorite: (id: number) => void;
 };
 
-export function HouseDetail({ house, open, onOpenChange, isFavorite, onToggleFavorite }: Props) {
+export function HouseDetail({ house, open, onOpenChange }: Props) {
   const isMobile = useIsMobile();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   if (!house) return null;
+
+  const favorite = isFavorite(house.id);
 
   if (isMobile) {
     return (
@@ -28,11 +30,7 @@ export function HouseDetail({ house, open, onOpenChange, isFavorite, onToggleFav
             </SheetDescription>
           </SheetHeader>
           <div className="flex flex-col gap-4 px-4 pb-6">
-            <HouseDetailContent
-              house={house}
-              isFavorite={isFavorite}
-              onToggleFavorite={onToggleFavorite}
-            />
+            <HouseDetailContent house={house} isFavorite={favorite} onToggleFavorite={toggleFavorite} />
           </div>
         </SheetContent>
       </Sheet>
@@ -49,11 +47,7 @@ export function HouseDetail({ house, open, onOpenChange, isFavorite, onToggleFav
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
-          <HouseDetailContent
-            house={house}
-            isFavorite={isFavorite}
-            onToggleFavorite={onToggleFavorite}
-          />
+          <HouseDetailContent house={house} isFavorite={favorite} onToggleFavorite={toggleFavorite} />
         </div>
       </DialogContent>
     </Dialog>

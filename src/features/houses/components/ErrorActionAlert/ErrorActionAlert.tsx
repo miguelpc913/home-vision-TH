@@ -1,7 +1,7 @@
 import { AlertCircle, Loader2, RefreshCw } from "lucide-react";
-import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@ui/alert";
 import { Button } from "@ui/button";
+import { useErrorActionAlert } from "./useErrorActionAlert";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -21,16 +21,7 @@ export function ErrorActionAlert({
   onAction,
   className,
 }: Props) {
-  const [isActing, setIsActing] = useState(false);
-
-  async function handleAction() {
-    setIsActing(true);
-    try {
-      await onAction();
-    } finally {
-      setIsActing(false);
-    }
-  }
+  const { isActing, handleAction } = useErrorActionAlert(onAction);
 
   return (
     <Alert variant="destructive" className={cn("max-w-xl", className)}>
